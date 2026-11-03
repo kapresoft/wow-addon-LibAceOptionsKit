@@ -1,6 +1,7 @@
 ## Interface: 11509, 16001, 20506, 30403, 40402, 50504, 120105
 ## Version: @project-version@
 ## Title: Lib|cff12E600AceOptionsKit|r
+## IconTexture: Interface/AddOns/LibAceOptionsKit/Assets/LibAceOptionsKit-Logo
 
 ## Author: @project-author@
 ## Notes: LibAceOptionsKit is an embeddable World of Warcraft library of|nBlizzard Settings-style widgets for AceConfig options tables.|n|cff1784d1Released under the MIT License, provided 'as is'|nwithout any warranties.|r

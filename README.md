@@ -1,5 +1,7 @@
 # LibAceOptionsKit
 
+<img src="doc/media/LibAceOptionsKit-Logo.png" alt="LibAceOptionsKit logo" width="200">
+
 ## **Step. Slide. Check.**
 
 Embeddable WoW library of Blizzard Settings-style widgets for AceConfig options tables.
