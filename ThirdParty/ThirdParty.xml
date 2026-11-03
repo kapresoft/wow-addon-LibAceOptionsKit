@@ -1,0 +1,19 @@
+<!--suppress ALL -->
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<!-- Standalone install only; LibStub and CallbackHandler load before the Ace3 libraries. -->
+	<Script file="Libs\Ace3\LibStub\LibStub.lua"/>
+	<Include file="Libs\Ace3\CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
+	<Include file="Libs\Ace3\AceGUI-3.0\AceGUI-3.0.xml"/>
+	<Include file="Libs\Ace3\AceConfig-3.0\AceConfig-3.0.xml"/>
+
+	<Script file="Libs\LibPrettyPrint\Libs\Namespace.lua"/>
+	<Script file="Libs\LibPrettyPrint\Libs\LibPrettyPrint.lua"/>
+	<Script file="Libs\LibPrettyPrint\Libs\pprint.lua"/>
+	<Script file="Libs\LibPrettyPrint\Libs\ValueFormatter.lua"/>
+	<Script file="Libs\LibPrettyPrint\Libs\Formatter.lua"/>
+	<Script file="Libs\LibPrettyPrint\Libs\Printer.lua"/>
+	<Script file="Libs\LibTraceKit\LibTraceKit.lua"/>
+
+</Ui>
