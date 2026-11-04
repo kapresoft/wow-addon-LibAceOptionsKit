@@ -1,27 +1,16 @@
 --[[-----------------------------------------------------------------------------
 WidgetUtil: row hover and tooltip helpers shared by the library's widgets.
 -------------------------------------------------------------------------------]]
-local lib = LibStub('LibAceOptionsKit-1.0')
+local lib = LibAceOptionsKit
 local ACD = LibStub('AceConfigDialog-3.0')
 
 --- Internal to the library's widgets; not a public API
 --- @class LibAceOptionsKit_WidgetUtil
-local o = {}; lib.WidgetUtil = o
+local o = {}; lib.O.WidgetUtil = o
 
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
---- Places the tooltip the way the library's widgets do
---- @param widget AceGUIWidget
---- @param tooltip GameTooltip
---- @param context ScriptRegion @The part the tooltip shows beside
-function lib:AnchorTooltip(widget, tooltip, context)
-  local offset = self:Layout(widget).tooltip
-  tooltip:SetAnchorType('ANCHOR_NONE')
-  tooltip:ClearAllPoints()
-  tooltip:SetPoint('BOTTOMLEFT', context, 'TOPRIGHT', offset.x, offset.y)
-end
-
 --- Same look as the hover highlight on Blizzard's Settings rows
 --- @param frame Frame
 --- @return Texture @Placed by PlaceRowHighlight

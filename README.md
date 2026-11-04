@@ -15,7 +15,7 @@ AceConfigDialog's default controls look dated next to Blizzard's own Settings pa
 - **Settings checkbox:** a checkbox styled like Blizzard's Settings panel; clicking anywhere on the row toggles it.
 - Rows line up like Blizzard's Settings: a label column, then the control, with the same hover highlight.
 - Sizes are adjustable per addon and per option, without touching other addons' dialogs.
-- Safe to embed in many addons at once: no XML templates and no global names besides `LibStub`.
+- Safe to embed in many addons at once: no XML templates and no global names besides `LibStub` and `LibAceOptionsKit` (the newest loaded copy, same as `LibStub('LibAceOptionsKit-1.0')`).
 - Works on Retail and Classic clients.
 
 ## Embedding

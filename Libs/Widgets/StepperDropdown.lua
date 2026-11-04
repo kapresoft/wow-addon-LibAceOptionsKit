@@ -6,13 +6,14 @@ Use via `dialogControl = AOK.StepperDropdown.Type` on a 'select' option.
 The stepper control is built in Lua, not from an XML template, so a newer
 embedded copy can replace it.
 -------------------------------------------------------------------------------]]
-local lib, minor = LibStub('LibAceOptionsKit-1.0')
+local lib = LibAceOptionsKit
 local AceGUI = LibStub('AceGUI-3.0')
-local Util = lib.WidgetUtil
+local Util = lib.O.WidgetUtil
 local p, t = lib:log('StepperDropdown')
 
 --- @type LibAceOptionsKit_WidgetInfo
-local o = { Type = 'LibAceOptionsKit_StepperDropdown', Version = minor }
+local o = { Type = 'LibAceOptionsKit_StepperDropdown', Version = lib.MINOR }; lib.O.StepperDropdown = o
+-- Public alias: AOK.StepperDropdown.Type in dialogControl
 lib.StepperDropdown = o
 
 --- Fields and methods a wrapper widget may use

@@ -3,13 +3,14 @@ StepperSlider Widget
 AceGUI range control using Blizzard's Settings slider with stepper arrows.
 Use via `dialogControl = AOK.StepperSlider.Type` on a 'range' option.
 -------------------------------------------------------------------------------]]
-local lib, minor = LibStub('LibAceOptionsKit-1.0')
+local lib = LibAceOptionsKit
 local AceGUI = LibStub('AceGUI-3.0')
-local Util = lib.WidgetUtil
+local Util = lib.O.WidgetUtil
 local p, t = lib:log('StepperSlider')
 
 --- @type LibAceOptionsKit_WidgetInfo
-local o = { Type = 'LibAceOptionsKit_StepperSlider', Version = minor }
+local o = { Type = 'LibAceOptionsKit_StepperSlider', Version = lib.MINOR }; lib.O.StepperSlider = o
+-- Public alias: AOK.StepperSlider.Type in dialogControl
 lib.StepperSlider = o
 
 local floor = math.floor
