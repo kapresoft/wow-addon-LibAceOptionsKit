@@ -190,6 +190,16 @@ To build your own widget on top of a stepper dropdown, create one with `AceGUI:C
 - `AOK:Layout(widget)`: the merged layout. Your own keys in `arg.layout` pass through.
 - `AOK:AnchorTooltip(widget, tooltip, context)`: places a tooltip the way the library's widgets do.
 
+## Example: DevSuite
+
+[DevSuite](https://github.com/kapresoft/wow-addon-devsuite) embeds LibAceOptionsKit for its General and Debug Console options:
+
+- **External:** [`pkgmeta.yaml`](https://github.com/kapresoft/wow-addon-devsuite/blob/46f34dae82965d95737d6613fdbaa15085e7bf67/pkgmeta.yaml#L38-L40) pulls the library.
+- **Loading:** [`ThirdParty.xml`](https://github.com/kapresoft/wow-addon-devsuite/blob/46f34dae82965d95737d6613fdbaa15085e7bf67/DevSuite/ThirdParty/ThirdParty.xml#L16-L20) loads its files.
+- **Accessor:** [`ns:LibAceOptionsKit()`](https://github.com/kapresoft/wow-addon-devsuite/blob/46f34dae82965d95737d6613fdbaa15085e7bf67/DevSuite/Libs/Global/Namespace.lua#L222-L223) returns the library.
+- **Checkboxes:** [`OptionsDialogMixin.lua`](https://github.com/kapresoft/wow-addon-devsuite/blob/46f34dae82965d95737d6613fdbaa15085e7bf67/DevSuite/Libs/Options/OptionsDialogMixin.lua#L134-L142) uses a SettingsCheckbox with a wider label through `arg.layout`.
+- **Stepper dropdown with a tooltip:** [`OptionsDebugConsole.lua`](https://github.com/kapresoft/wow-addon-devsuite/blob/46f34dae82965d95737d6613fdbaa15085e7bf67/DevSuite/Libs/Options/OptionsDebugConsole.lua#L77-L95) shows a font preview over the dropdown through `arg.tooltip.dropdown`.
+
 ## API
 
 | Member | Description |
