@@ -1,8 +1,8 @@
 --[[-----------------------------------------------------------------------------
 DeveloperSetup: dev-only printer and tracer, replacing the no-ops
-in LogTraceKit.lua. Loads before the files that call lib:log.
+in LibAceOptionsKit.lua. Loads before the files that call lib:log.
 -------------------------------------------------------------------------------]]
-local lib = LibStub('LibAceOptionsKit-1.0')
+local lib = LibAceOptionsKit
 local LibPrettyPrint = LibStub('LibPrettyPrint-1.0')
 local LibTraceKit = LibStub('LibTraceKit-1.0')
 

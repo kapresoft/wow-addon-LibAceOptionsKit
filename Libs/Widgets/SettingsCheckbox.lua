@@ -3,13 +3,14 @@ SettingsCheckbox Widget
 AceGUI toggle control using Blizzard's Settings checkbox.
 Use via `dialogControl = AOK.SettingsCheckbox.Type` on a 'toggle' option.
 -------------------------------------------------------------------------------]]
-local lib, minor = LibStub('LibAceOptionsKit-1.0')
+local lib = LibAceOptionsKit
 local AceGUI = LibStub('AceGUI-3.0')
-local Util = lib.WidgetUtil
+local Util = lib.O.WidgetUtil
 local p, t = lib:log('SettingsCheckbox')
 
 --- @type LibAceOptionsKit_WidgetInfo
-local o = { Type = 'LibAceOptionsKit_SettingsCheckbox', Version = minor }
+local o = { Type = 'LibAceOptionsKit_SettingsCheckbox', Version = lib.MINOR }; lib.O.SettingsCheckbox = o
+-- Public alias: AOK.SettingsCheckbox.Type in dialogControl
 lib.SettingsCheckbox = o
 
 --[[-----------------------------------------------------------------------------
