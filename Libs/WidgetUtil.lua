@@ -7,6 +7,7 @@ local ACD = LibStub('AceConfigDialog-3.0')
 --- Internal to the library's widgets; not a public API
 --- @class LibAceOptionsKit_WidgetUtil
 local o = {}; lib.O.WidgetUtil = o
+local p, t = lib:log('WidgetUtil')
 
 --[[-----------------------------------------------------------------------------
 Methods
@@ -74,3 +75,5 @@ function o:FireEnter(widget, context)
   if not (tooltip:IsShown() and tooltip:GetOwner() == widget.frame) then return end
   lib:AnchorTooltip(widget, tooltip, context)
 end
+
+p('Loaded...')

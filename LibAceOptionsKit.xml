@@ -2,7 +2,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
-	<!-- The file an addon includes to embed the library; the addon loads LibStub, Ace3, LibPrettyPrint and LibTraceKit first. -->
+	<!-- Required Dependencies -->
+	<Include file="ThirdParty\ThirdParty.xml"/>
+
 	<Script file="Libs\LibAceOptionsKit.lua"/>
 	<!--@do-not-package@-->
 	<Script file="Libs\Developer\DeveloperSetup.lua"/>
