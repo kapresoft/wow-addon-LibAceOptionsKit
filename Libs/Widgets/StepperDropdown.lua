@@ -2,6 +2,8 @@
 StepperDropdown Widget
 AceGUI select control using Blizzard's Settings dropdown with stepper arrows.
 Use via `dialogControl = AOK.StepperDropdown.Type` on a 'select' option.
+Layout: [Label] [icon] < [dropdown] > [button]; the icon and button show only
+when the option sets `arg.icon` / `arg.button`.
 
 The stepper control is built in Lua, not from an XML template, so a newer
 embedded copy can replace it.
@@ -16,12 +18,18 @@ local o = { Type = 'LibAceOptionsKit_StepperDropdown', Version = lib.MINOR }; li
 -- Public alias: AOK.StepperDropdown.Type in dialogControl
 lib.StepperDropdown = o
 
+local ATLAS_ON = 'auctionhouse-icon-favorite'
+local ATLAS_OFF = 'auctionhouse-icon-favorite-off'
+local MENU_MARK_SIZE = 14
+
 --- Fields and methods a wrapper widget may use
 --- @class LibAceOptionsKit_StepperDropdownWidget : AceGUIWidget
 --- @field frame Frame                              @Parent for a wrapper's extra regions
 --- @field label FontString
 --- @field control Frame                            @Re-anchored on OnWidthSet; re-anchor after it
 --- @field dropdown DropdownButton
+--- @field icon Button                              @Shown when the option sets arg.icon
+--- @field button Button                            @Shown when the option sets arg.button
 --- @field GetEntryText fun(self, key: any): string @Override to decorate menu entries
 
 --[[-----------------------------------------------------------------------------
@@ -57,9 +65,46 @@ local function CreateStepperControl(parent)
   return control
 end
 
+--- @param frame Frame
+--- @return Button
+local function CreateIcon(frame)
+  local icon = CreateFrame('Button', nil, frame)
+  icon.texture = icon:CreateTexture(nil, 'ARTWORK')
+  icon.texture:SetAllPoints()
+  icon:Hide()
+  return icon
+end
+
+--- @param frame Frame
+--- @return Button
+local function CreateButton(frame)
+  local template = 'RefreshButtonTemplate' --[[@as Template ]]
+  local button = CreateFrame('Button', nil, frame, template)
+  button:Hide()
+  return button
+end
+
 --[[-----------------------------------------------------------------------------
 Support functions
 -------------------------------------------------------------------------------]]
+--- @param self table
+--- @return LibAceOptionsKit_IconArg? @nil unless the option sets arg.icon
+local function IconArg(self)
+  local arg = lib:ArgFor(self)
+  return arg and arg.icon
+end
+
+--- @param self table
+--- @return LibAceOptionsKit_ButtonArg? @nil unless the option sets arg.button
+local function ButtonArg(self)
+  local arg = lib:ArgFor(self)
+  return arg and arg.button
+end
+
+--- @param icon LibAceOptionsKit_IconArg
+--- @return string, string @The on and off atlases
+local function Atlases(icon) return icon.atlasOn or ATLAS_ON, icon.atlasOff or ATLAS_OFF end
+
 --- @param list table<any, string>
 --- @return any[] @Keys sorted by their display text
 local function SortedKeys(list)
@@ -71,6 +116,21 @@ local function SortedKeys(list)
   return keys
 end
 
+--- Shows the icon's state for the selected value
+--- @param self table
+local function RefreshIcon(self)
+  local icon = IconArg(self)
+  if not icon then return end
+  local atlasOn, atlasOff = Atlases(icon)
+  self.icon.texture:SetAtlas(icon.get() and atlasOn or atlasOff)
+  self.icon:SetHighlightAtlas(atlasOff, 'ADD')
+end
+
+--- @param self table
+local function Refresh(self)
+  if self.dropdown:IsShown() then self.dropdown:GenerateMenu() end
+end
+
 --- @param self table
 local function SetupMenu(self)
   local function IsSelected(key) return key == self.value end
@@ -78,6 +138,7 @@ local function SetupMenu(self)
     if self.disabled or key == self.value then return end
     self.value = key
     self:Fire('OnValueChanged', key)
+    RefreshIcon(self)
   end
   self.dropdown:SetupMenu(function(_, root)
     for _, key in ipairs(self.order) do
@@ -100,11 +161,6 @@ local function OpenMenuAboveDialogs(dropdown)
   end
 end
 
---- @param self table
-local function Refresh(self)
-  if self.dropdown:IsShown() then self.dropdown:GenerateMenu() end
-end
-
 --- Arrow widths plus the gaps from Blizzard's OnLoad
 --- @param control Frame
 --- @return number @px
@@ -119,11 +175,12 @@ end
 Scripts
 -------------------------------------------------------------------------------]]
 --- @param self table
-local function Dropdown_OnEnter(self)
-  local tooltip = lib:DropdownTooltip(self)
+--- @param context ScriptRegion                       @The part the tooltip shows beside
+--- @param tooltip (string|fun(tooltip: GameTooltip))? @Nothing shows if nil
+local function ShowTooltip(self, context, tooltip)
   if not tooltip then return end
-  GameTooltip:SetOwner(self.dropdown, 'ANCHOR_NONE')
-  lib:AnchorTooltip(self, GameTooltip, self.dropdown)
+  GameTooltip:SetOwner(context, 'ANCHOR_NONE')
+  lib:AnchorTooltip(self, GameTooltip, context)
   if type(tooltip) == 'function' then
     tooltip(GameTooltip)
   else
@@ -133,7 +190,7 @@ local function Dropdown_OnEnter(self)
 end
 
 --- Undo line fonts a tooltip set; the lines are shared
-local function Dropdown_OnLeave()
+local function HideTooltip()
   for i = 1, GameTooltip:NumLines() do
     local line = _G['GameTooltipTextLeft' .. i]
     line:SetFontObject(i == 1 and GameTooltipHeaderText or GameTooltipText)
@@ -141,17 +198,98 @@ local function Dropdown_OnLeave()
   GameTooltip:Hide()
 end
 
---- Runs on each SetWidth; the option is only known by then
+--- @param self table
+local function Dropdown_OnEnter(self) ShowTooltip(self, self.dropdown, lib:DropdownTooltip(self)) end
+
+--- @param self table
+local function Icon_OnClick(self)
+  local icon = IconArg(self)
+  if self.disabled or not icon then return end
+  icon.set(not icon.get())
+  RefreshIcon(self)
+  Refresh(self)
+end
+
+--- @param self table
+local function Icon_OnEnter(self)
+  local icon = IconArg(self)
+  ShowTooltip(self, self.icon, icon and icon.tooltip)
+end
+
+--- @param self table
+local function Button_OnClick(self)
+  local button = ButtonArg(self)
+  if button then button.onClick() end
+end
+
+--- @param self table
+local function Button_OnEnter(self)
+  local button = ButtonArg(self)
+  ShowTooltip(self, self.button, button and button.tooltip)
+end
+
+--[[-----------------------------------------------------------------------------
+Layout
+-------------------------------------------------------------------------------]]
+--- Room the icon and button take from a 'fill' dropdown
+--- @param self table
+--- @param layout LibAceOptionsKit_Layout
+--- @return number @px
+local function ReservedWidth(self, layout)
+  local reserved = 0
+  if IconArg(self) then reserved = reserved + layout.icon.width + layout.icon.gap end
+  if ButtonArg(self) then reserved = reserved + self.button:GetWidth() + layout.button.gap end
+  return reserved
+end
+
+--- @param self table
+--- @param layout LibAceOptionsKit_Layout
+local function PlaceIcon(self, layout)
+  local shown = IconArg(self) ~= nil
+  self.icon:SetShown(shown)
+  if not shown then return end
+  self.icon:ClearAllPoints()
+  self.icon:SetPoint('LEFT', self.label, 'RIGHT', layout.row.gap, 0)
+  self.icon:SetSize(layout.icon.width, layout.icon.height)
+  RefreshIcon(self)
+end
+
+--- After the icon if shown, else after the label
+--- @param self table
+--- @param layout LibAceOptionsKit_Layout
+local function PlaceControl(self, layout)
+  self.control:ClearAllPoints()
+  if self.icon:IsShown() then
+    self.control:SetPoint('LEFT', self.icon, 'RIGHT', layout.icon.gap, 0)
+  else
+    self.control:SetPoint('LEFT', self.label, 'RIGHT', layout.row.gap, 0)
+  end
+end
+
+--- @param self table
+--- @param layout LibAceOptionsKit_Layout
+local function PlaceButton(self, layout)
+  local shown = ButtonArg(self) ~= nil
+  self.button:SetShown(shown)
+  if not shown then return end
+  self.button:ClearAllPoints()
+  self.button:SetPoint('LEFT', self.control, 'RIGHT', layout.button.gap, 0)
+end
+
+--- Runs on each SetWidth; the option is only known by then. Pooled
+--- widgets are reused, so the icon and button are shown or hidden here.
 --- @param self table
 --- @param width number @px
 local function ApplyLayout(self, width)
   local layout = lib:Layout(self)
-  local controlWidth = Util:ControlWidth(width, layout, layout.dropdown.width)
+  local reserved = ReservedWidth(self, layout)
+  local controlWidth = Util:ControlWidth(width, layout, layout.dropdown.width, reserved)
   self.label:SetWidth(layout.label.width)
-  self.control:ClearAllPoints()
-  self.control:SetPoint('LEFT', self.label, 'RIGHT', layout.row.gap, 0)
+  PlaceIcon(self, layout)
+  PlaceControl(self, layout)
   self.control:SetSize(controlWidth, layout.dropdown.height)
   self.dropdown:SetWidth(controlWidth - self.steppersWidth)
+  PlaceButton(self, layout)
   self:SetHeight(layout.row.height)
   Util:PlaceRowHighlight(self, layout)
   Util:LimitHoverToLabel(self, layout.label.width)
@@ -180,6 +318,8 @@ local methods = {
   SetDisabled = function(self, disabled)
     self.disabled = disabled
     self.control:SetEnabled(not disabled)
+    self.icon:SetEnabled(not disabled)
+    self.button:SetEnabled(not disabled)
     local color = disabled and GRAY_FONT_COLOR or NORMAL_FONT_COLOR
     self.label:SetTextColor(color:GetRGB())
   end,
@@ -192,17 +332,35 @@ local methods = {
 
   SetValue = function(self, value)
     self.value = value
+    RefreshIcon(self)
     Refresh(self)
   end,
 
   GetValue = function(self) return self.value end,
 
-  GetEntryText = function(self, key) return self.list[key] end,
+  --- Entries that `arg.icon.marks` picks get the icon's on-atlas
+  GetEntryText = function(self, key)
+    local text = self.list[key]
+    local icon = IconArg(self)
+    if not (icon and icon.marks and icon.marks(key)) then return text end
+    local atlasOn = Atlases(icon)
+    return text .. ' ' .. CreateAtlasMarkup(atlasOn, MENU_MARK_SIZE, MENU_MARK_SIZE)
+  end,
 }
 
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
+--- @param widget table
+local function HookExtras(widget)
+  widget.icon:SetScript('OnClick', function() Icon_OnClick(widget) end)
+  widget.icon:SetScript('OnEnter', function() Icon_OnEnter(widget) end)
+  widget.icon:SetScript('OnLeave', HideTooltip)
+  widget.button:SetScript('OnClick', function() Button_OnClick(widget) end)
+  widget.button:HookScript('OnEnter', function() Button_OnEnter(widget) end)
+  widget.button:HookScript('OnLeave', HideTooltip)
+end
+
 local function Constructor()
   local frame = CreateFrame('Frame', nil, UIParent)
   frame:EnableMouse(true)
@@ -218,6 +376,8 @@ local function Constructor()
     hover = Util:CreateRowHighlight(frame),
     control = control,
     dropdown = control.Dropdown,
+    icon = CreateIcon(frame),
+    button = CreateButton(frame),
     steppersWidth = SteppersWidth(control),
     list = {},
     order = {},
@@ -230,9 +390,10 @@ local function Constructor()
   end
   OpenMenuAboveDialogs(widget.dropdown)
   SetupMenu(widget)
+  HookExtras(widget)
   Util:HookRowHover(widget, control)
   control.Dropdown:HookScript('OnEnter', function() Dropdown_OnEnter(widget) end)
-  control.Dropdown:HookScript('OnLeave', Dropdown_OnLeave)
+  control.Dropdown:HookScript('OnLeave', HideTooltip)
 
   return AceGUI:RegisterAsWidget(widget)
 end

@@ -4,9 +4,11 @@ Dev only, like Developer.lua; laok_dev:OpenTests() opens it.
 -------------------------------------------------------------------------------]]
 local AOK = LibStub('LibAceOptionsKit-1.0')
 local AceConfig = LibStub('AceConfig-3.0')
+local AceConfigRegistry = LibStub('AceConfigRegistry-3.0')
 
 --- @class LibAceOptionsKit_Tests
 local o = {}; laok_tests = o
+local p, t = AOK:log('Tests')
 
 --[[-----------------------------------------------------------------------------
 Options
@@ -15,9 +17,47 @@ local values = {
   checked = true, unchecked = false, disabled = true, wide = false, ace = true,
   slider = 50, percent = 0.25, sliderDisabled = 20, sliderFill = 30, aceRange = 50,
   dropdown = 12, ordered = 'high', dropdownDisabled = 12, dropdownFill = 14, aceSelect = 12,
+  dropdownIcon = 12, dropdownButton = 12, dropdownBoth = 14, dropdownSwitch = 12,
+  switchVariant = 'both',
 }
 local sizes = { [10] = 'Small', [12] = 'Medium', [14] = 'Large', [16] = 'Huge' }
 local levels = { low = 'Low', medium = 'Medium', high = 'High' }
+local favorites = { [12] = true }
+local variants = { none = 'None', icon = 'Icon', button = 'Button', both = 'Icon and button' }
+-- Set by Register; the switch row re-renders this app
+local testApp
+
+--- Favorite star on the selected size, for the given option key
+--- @param key string
+--- @return LibAceOptionsKit_IconArg
+local function FavoriteIcon(key)
+  return {
+    get = function() return favorites[values[key]] == true end,
+    set = function(on)
+      favorites[values[key]] = on or nil
+      t('icon set:', key, 'size =', values[key], 'on =', on)
+    end,
+    marks = function(size) return favorites[size] == true end,
+    tooltip = function(tooltip) tooltip:SetText('Toggle favorite') end,
+  }
+end
+
+--- @type LibAceOptionsKit_ButtonArg
+local reloadButton = {
+  onClick = function() t('button clicked') end,
+  tooltip = function(tooltip) tooltip:SetText('Button tooltip') end,
+}
+
+--- @param variant string @A key of variants
+--- @return LibAceOptionsKit_Arg
+local function SwitchArg(variant)
+  local hasIcon = variant == 'icon' or variant == 'both'
+  local hasButton = variant == 'button' or variant == 'both'
+  return {
+    icon = hasIcon and FavoriteIcon('dropdownSwitch') or nil,
+    button = hasButton and reloadButton or nil,
+  }
+end
 
 --- @param order number
 --- @return table<string, LibAceOptionsKit_Option>
@@ -122,8 +162,42 @@ local function DropdownArgs(order)
       dialogControl = AOK.StepperDropdown.Type,
       arg = { layout = { dropdown = { width = 'fill' } } },
     },
-    aceSelect = {
+    dropdownIcon = {
       type = 'select', order = order + 5, width = 'full', values = sizes,
+      name = 'Dropdown, arg.icon (marks favorites)',
+      dialogControl = AOK.StepperDropdown.Type,
+      arg = { icon = FavoriteIcon('dropdownIcon') },
+    },
+    dropdownButton = {
+      type = 'select', order = order + 6, width = 'full', values = sizes,
+      name = 'Dropdown, arg.button',
+      dialogControl = AOK.StepperDropdown.Type,
+      arg = { button = reloadButton },
+    },
+    dropdownBoth = {
+      type = 'select', order = order + 7, width = 'full', values = sizes,
+      name = "Dropdown, icon and button, 'fill'",
+      dialogControl = AOK.StepperDropdown.Type,
+      arg = {
+        icon = FavoriteIcon('dropdownBoth'),
+        button = reloadButton,
+        layout = { dropdown = { width = 'fill' } },
+      },
+    },
+    switchVariant = {
+      type = 'select', order = order + 8, width = 'full', values = variants,
+      sorting = { 'none', 'icon', 'button', 'both' },
+      name = 'Next row shows',
+      dialogControl = AOK.StepperDropdown.Type,
+    },
+    dropdownSwitch = {
+      type = 'select', order = order + 9, width = 'full', values = sizes,
+      name = 'Dropdown, switched (widget reuse)',
+      dialogControl = AOK.StepperDropdown.Type,
+      arg = SwitchArg(values.switchVariant),
+    },
+    aceSelect = {
+      type = 'select', order = order + 10, width = 'full', values = sizes,
       name = 'Ace select, for comparison',
     },
   }
@@ -142,8 +216,13 @@ local function Options()
     name = 'LibAceOptionsKit Dev',
     get = function(info) return values[info[#info]] end,
     set = function(info, value)
-      values[info[#info]] = value
-      print('LAOK set:', info[#info], '=', value)
+      local key = info[#info]
+      values[key] = value
+      t('set:', key, '=', value)
+      if key ~= 'switchVariant' then return end
+      info.options.args.dropdownSwitch.arg = SwitchArg(value)
+      t('switch row now shows:', value)
+      AceConfigRegistry:NotifyChange(testApp)
     end,
     args = args,
   }
@@ -155,6 +234,7 @@ Methods
 --- Called on open only, so a plain /reload registers nothing
 --- @param appName string @The AceConfig app name to register
 function o:Register(appName)
+  testApp = appName
   -- App default; the 'wide' row's arg.layout overrides it
   AOK:SetDefaults(appName, { label = { width = 200 } })
   AceConfig:RegisterOptionsTable(appName, Options())
