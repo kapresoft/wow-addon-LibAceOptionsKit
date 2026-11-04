@@ -2,7 +2,7 @@
 LibAceOptionsKit: Blizzard Settings-style AceGUI widgets for AceConfig
 options tables, used through an option's dialogControl.
 -------------------------------------------------------------------------------]]
-local MAJOR, MINOR = 'LibAceOptionsKit-1.0', 1
+local MAJOR, MINOR = 'LibAceOptionsKit-1.0', 2
 
 --- AceGUI type name and version, for an option's dialogControl
 --- @class LibAceOptionsKit_WidgetInfo
@@ -71,6 +71,8 @@ local DEFAULT_LAYOUT = {
   dropdown = { width = 260, height = 30 },
   checkbox = { width = 30, height = 30 },
   slider = { width = 220, height = 19, valueWidth = 45 },
+  icon = { width = 18, height = 18, gap = 4 },
+  button = { gap = 4 },
   tooltip = { x = 20, y = 20 },
 }
 
@@ -95,7 +97,7 @@ end
 --- @param widget AceGUIWidget
 --- @return (string|fun(tooltip: GameTooltip))? @nil if the option sets none
 function lib:DropdownTooltip(widget)
-  local arg = self:_ArgFor(widget)
+  local arg = self:ArgFor(widget)
   local tooltip = arg and arg.tooltip
   return type(tooltip) == 'table' and tooltip.dropdown or nil
 end
@@ -112,19 +114,25 @@ end
 --- @return LibAceOptionsKit_Layout
 function lib:Layout(widget)
   local appDefaults = self.appDefaults[widget:GetUserData('appName')] or {}
-  local arg = self:_ArgFor(widget)
+  local arg = self:ArgFor(widget)
   local layout = self:_Overlay(self:_Overlay({}, DEFAULT_LAYOUT), appDefaults)
   return self:_Overlay(layout, arg and arg.layout or {})
 end
 
---- @private
+--- The option's `arg`, as AceConfigDialog passed it to the widget
 --- @param widget AceGUIWidget
 --- @return LibAceOptionsKit_Arg? @nil unless the option's `arg` is a table
-function lib:_ArgFor(widget)
+function lib:ArgFor(widget)
   local option = widget:GetUserData('option') --[[@as LibAceOptionsKit_Option?]]
   local arg = option and option.arg
   return type(arg) == 'table' and arg or nil
 end
+
+--- @private
+--- @deprecated Use lib:ArgFor; kept for callers of 2026.11.2
+--- @param widget AceGUIWidget
+--- @return LibAceOptionsKit_Arg?
+function lib:_ArgFor(widget) return self:ArgFor(widget) end
 
 --- @private
 --- Deep-copies source's keys into target; tables merge per key

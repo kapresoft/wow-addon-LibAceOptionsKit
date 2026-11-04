@@ -105,6 +105,29 @@ options.args.fontSize = {
 - `desc` shows beside the label, like any option's tooltip.
 - `arg.tooltip.dropdown` is an extra tooltip over the dropdown itself: a string, or a `function(tooltip)` that fills `GameTooltip`.
 
+#### Icon toggle and trailing button
+
+Two optional extras turn the row into `[Label] [icon] < [dropdown] > [button]`. Each shows only when the option sets it, e.g. a favorite star and a reload button:
+
+```lua
+arg = {
+  icon = {
+    get = function() return db.favorites[db.profile] end,  -- on/off for the selected value
+    set = function(on) db.favorites[db.profile] = on end,
+    marks = function(key) return db.favorites[key] end,    -- menu entries shown with the icon
+    tooltip = function(tooltip) tooltip:SetText('Favorite') end,
+  },
+  button = {
+    onClick = function() ReloadUI() end,
+    tooltip = function(tooltip) tooltip:SetText('Reload') end,
+  },
+}
+```
+
+- `arg.icon`: clicking it calls `set(not get())`. `atlasOn` and `atlasOff` pick another icon (lock, pin, eye, ...); the default is the favorite star. `marks` and `tooltip` are optional.
+- `arg.button`: Blizzard's refresh button after the dropdown. `tooltip` is optional.
+- Both disable with the option, and their tooltips are placed like the dropdown's.
+
 ## Layout
 
 Each widget's sizes come from three layers. Each one overrides the one before it, key by key:
@@ -134,7 +157,9 @@ Defaults are per app name, not global: every addon that embeds the library share
 | `checkbox.width` / `checkbox.height` | The checkbox. |
 | `slider.width` / `slider.height` | The slider, not counting its value label. |
 | `slider.valueWidth` | Room kept for the value label when `slider.width` is `'fill'`. |
-| `dropdown.width` / `dropdown.height` | The dropdown, arrows included. |
+| `dropdown.width` / `dropdown.height` | The dropdown, arrows included. A `'fill'` dropdown leaves room for the icon and button. |
+| `icon.width` / `icon.height` | The stepper dropdown's icon toggle. |
+| `icon.gap` / `button.gap` | Space between the dropdown and its icon or button. |
 | `tooltip.x` / `tooltip.y` | The tooltip's offset from the part it shows beside. |
 
 `slider.width` and `dropdown.width` also take `'fill'`: the control takes what's left of the row after the label.
@@ -185,7 +210,8 @@ To build your own widget on top of a stepper dropdown, create one with `AceGUI:C
 - `widget.frame`: the row frame, the parent for your extra regions.
 - `widget.label`, `widget.control`: anchors. The widget re-anchors `control` on each `OnWidthSet`, so a wrapper that moves it does so in its own `OnWidthSet` hook, after the original.
 - `widget.dropdown`: the dropdown button, e.g. to point a help tip at it.
-- `widget:GetEntryText(key)`: override it to decorate menu entries. The closed dropdown still shows the plain value.
+- `widget.icon`, `widget.button`: the icon toggle and trailing button, shown only when the option sets `arg.icon` / `arg.button`.
+- `widget:GetEntryText(key)`: override it to decorate menu entries. The closed dropdown still shows the plain value. An override replaces the `arg.icon.marks` decoration.
 - `OnWidthSet`, `SetDisabled`: hook them by calling the original first.
 - `AOK:Layout(widget)`: the merged layout. Your own keys in `arg.layout` pass through.
 - `AOK:AnchorTooltip(widget, tooltip, context)`: places a tooltip the way the library's widgets do.
@@ -207,6 +233,7 @@ To build your own widget on top of a stepper dropdown, create one with `AceGUI:C
 | `AOK.SettingsCheckbox`, `AOK.StepperSlider`, `AOK.StepperDropdown` | Each has the widget's AceGUI `Type` and `Version`. |
 | `AOK:SetDefaults(appName, layout)` | Merges `layout` into the app's defaults. |
 | `AOK:Layout(widget)` | The widget's merged layout, as a new table. |
+| `AOK:ArgFor(widget)` | The option's `arg` table, or nil if it has none. |
 | `AOK:AnchorTooltip(widget, tooltip, context)` | Places `tooltip` beside `context`, a part of the widget. |
 
 ## Requirements
