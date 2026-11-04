@@ -39,6 +39,8 @@ Then load it from your TOC or XML, after LibStub, AceGUI-3.0 and AceConfig-3.0:
 <Include file="ThirdParty\Libs\LibAceOptionsKit\LibAceOptionsKit.xml"/>
 ```
 
+The library doesn't bundle its dependencies: your addon either bundles Ace3 and loads it first, as above, or uses Ace3 installed as an addon. `LibAceOptionsKit.xml` includes `ThirdParty\ThirdParty.xml` to declare what it needs, but those files ship only with the standalone install, so in your addon that include loads nothing.
+
 ## Usage
 
 Set an option's `dialogControl` to the widget's `Type`. Everything else about the option (`name`, `desc`, `get`, `set`, `disabled`, ...) works as usual.

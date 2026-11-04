@@ -7,7 +7,7 @@
 ## Notes: LibAceOptionsKit is an embeddable World of Warcraft library of|nBlizzard Settings-style widgets for AceConfig options tables.|n|cff1784d1Released under the MIT License, provided 'as is'|nwithout any warranties.|r
 
 ## DefaultState: enabled
-## OptionalDeps: LibPrettyPrint, LibTraceKit
+## OptionalDeps: Ace3, LibPrettyPrint, LibTraceKit
 
 ## Category-enUS: Libraries
 ## Category-deDE: Bibliotheken
@@ -35,6 +35,5 @@
 ## X-PayPal-Donation-ID: AX58YP3GSGXVU
 ## X-PayPal-Donation-URL: https://www.paypal.com/donate/?hosted_button_id=AX58YP3GSGXVU
 
-ThirdParty\ThirdParty.xml
 LibAceOptionsKit.xml
 
