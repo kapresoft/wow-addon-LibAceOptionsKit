@@ -39,6 +39,7 @@ ignore:
   - "*.toml"
   - dev
   - doc
+  - Libs/Developer
   - ThirdParty/Libs/Ace3/Ace3.lua
   - ThirdParty/Libs/Ace3/Ace3.toc
   - ThirdParty/Libs/Ace3/Bindings.xml

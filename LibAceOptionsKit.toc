@@ -37,3 +37,6 @@
 
 ThirdParty\ThirdParty.xml
 LibAceOptionsKit.xml
+#@do-not-package@
+Libs\Developer\_Developer.xml
+#@end-do-not-package@

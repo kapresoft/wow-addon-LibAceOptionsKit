@@ -4,5 +4,10 @@
 
 	<!-- The file an addon includes to embed the library; the addon loads LibStub, Ace3, LibPrettyPrint and LibTraceKit first. -->
 	<Script file="Libs\LibAceOptionsKit.lua"/>
+	<Script file="Libs\Layout.lua"/>
+	<Script file="Libs\WidgetUtil.lua"/>
+	<Script file="Libs\Widgets\SettingsCheckbox.lua"/>
+	<Script file="Libs\Widgets\StepperSlider.lua"/>
+	<Script file="Libs\Widgets\StepperDropdown.lua"/>
 
 </Ui>
