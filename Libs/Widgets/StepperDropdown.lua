@@ -9,6 +9,7 @@ embedded copy can replace it.
 local lib, minor = LibStub('LibAceOptionsKit-1.0')
 local AceGUI = LibStub('AceGUI-3.0')
 local Util = lib.WidgetUtil
+local p, t = lib:log('StepperDropdown')
 
 --- @type LibAceOptionsKit_WidgetInfo
 local o = { Type = 'LibAceOptionsKit_StepperDropdown', Version = minor }

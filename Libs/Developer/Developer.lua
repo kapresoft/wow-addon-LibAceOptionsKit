@@ -1,6 +1,6 @@
 --[[-----------------------------------------------------------------------------
 Developer: dev-only hooks for testing the library in game.
-Loaded by the TOC inside @do-not-package@; never packaged or embedded.
+Loaded by LibAceOptionsKit.xml inside @do-not-package@; never packaged.
 
 Run in LuaDevKit:
   laok_dev:OpenTests() -- opens the test dialog (Tests.lua)
@@ -36,4 +36,5 @@ end
 function o:OpenTests()
   Tests:Register(self.APP)
   AceConfigDialog:Open(self.APP)
+  AceConfigDialog.OpenFrames[self.APP].frame:SetClampedToScreen(true)
 end
