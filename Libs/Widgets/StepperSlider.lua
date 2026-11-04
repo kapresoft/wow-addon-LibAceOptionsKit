@@ -6,6 +6,7 @@ Use via `dialogControl = AOK.StepperSlider.Type` on a 'range' option.
 local lib, minor = LibStub('LibAceOptionsKit-1.0')
 local AceGUI = LibStub('AceGUI-3.0')
 local Util = lib.WidgetUtil
+local p, t = lib:log('StepperSlider')
 
 --- @type LibAceOptionsKit_WidgetInfo
 local o = { Type = 'LibAceOptionsKit_StepperSlider', Version = minor }
