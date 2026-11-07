@@ -21,6 +21,8 @@ lib.StepperDropdown = o
 local ATLAS_ON = 'auctionhouse-icon-favorite'
 local ATLAS_OFF = 'auctionhouse-icon-favorite-off'
 local MENU_MARK_SIZE = 14
+local MENU_ENTRY_HEIGHT = 20
+local MENU_MAX_VISIBLE_ENTRIES = 20
 
 --- Fields and methods a wrapper widget may use
 --- @class LibAceOptionsKit_StepperDropdownWidget : AceGUIWidget
@@ -141,6 +143,7 @@ local function SetupMenu(self)
     RefreshIcon(self)
   end
   self.dropdown:SetupMenu(function(_, root)
+    root:SetScrollMode(MENU_ENTRY_HEIGHT * MENU_MAX_VISIBLE_ENTRIES)
     for _, key in ipairs(self.order) do
       root:CreateRadio(self:GetEntryText(key), IsSelected, SetSelected, key)
     end

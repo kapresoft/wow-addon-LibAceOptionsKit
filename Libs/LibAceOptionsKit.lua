@@ -2,7 +2,7 @@
 LibAceOptionsKit: Blizzard Settings-style AceGUI widgets for AceConfig
 options tables, used through an option's dialogControl.
 -------------------------------------------------------------------------------]]
-local MAJOR, MINOR = 'LibAceOptionsKit-1.0', 2
+local MAJOR, MINOR = 'LibAceOptionsKit-1.0', 3
 
 --- AceGUI type name and version, for an option's dialogControl
 --- @class LibAceOptionsKit_WidgetInfo
